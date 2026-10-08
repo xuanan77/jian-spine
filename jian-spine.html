@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b8f80"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="description" content="Children scoliosis screening and posture tracking · 儿童脊柱侧弯筛查 · 어린이 척추측만증 선별">
+<title>脊安 · 儿童脊柱侧弯家庭筛查与姿势追踪</title>
+<style>
+:root{--bg:#f2f7f7;--card:#fff;--ink:#0f2d3f;--mut:#5a7080;--line:#d5e2e5;--acc:#0b8f80;--accT:#fff;--warn:#b7791f;--bad:#c53b3b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1b23;--card:#152934;--ink:#e6f0f3;--mut:#9bb0ba;--line:#26414f;--acc:#2fc4b2;--accT:#06231f;--warn:#e3b04b;--bad:#ef7b7b}}
+:root[data-theme="dark"]{--bg:#0d1b23;--card:#152934;--ink:#e6f0f3;--mut:#9bb0ba;--line:#26414f;--acc:#2fc4b2;--accT:#06231f;--warn:#e3b04b;--bad:#ef7b7b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "PingFang SC","Noto Sans SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif}
+.w{max-width:640px;margin:0 auto;padding:16px}
+header{display:flex;gap:14px;align-items:center;padding:8px 0 14px}
+h1{font-size:1.45rem;line-height:1.3;margin:0}
+header p{margin:2px 0 0;color:var(--mut);font-size:.9rem}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tab{flex:1;min-width:max-content;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px;border-radius:10px;font:inherit;cursor:pointer}
+.tab[aria-selected=true]{background:var(--acc);color:var(--accT);border-color:var(--acc);font-weight:600}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+section{display:none;margin-top:14px}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:1.15rem;margin:0 0 8px}
+.mut{color:var(--mut);font-size:.9rem}
+label.q{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+label.q input{width:22px;height:22px;margin-top:2px;accent-color:var(--acc)}
+.btn{border:0;background:var(--acc);color:var(--accT);padding:11px 18px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;margin:10px 8px 0 0}
+.btn.s{background:transparent;color:var(--ink);border:1px solid var(--line)}
+canvas{width:100%;height:auto;border-radius:10px;background:var(--line);touch-action:manipulation;display:block}
+.res{border-left:6px solid var(--acc);padding:4px 0 4px 12px;margin-top:12px}
+.res.w1{border-color:var(--warn)}.res.w2{border-color:var(--bad)}
+.big{font-size:2.4rem;font-weight:700;line-height:1.1}
+input[type=number]{font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;width:7em;background:var(--bg);color:var(--ink)}
+ol{padding-left:1.2em;margin:6px 0}
+svg text{fill:var(--mut);font-size:10px}
+.rec{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
+footer{font-size:.85rem;color:var(--mut);margin-top:8px}
+.lang{margin-left:auto;display:flex;gap:4px;flex-shrink:0}.lang button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 9px;font:inherit;font-size:.82rem;cursor:pointer}.lang button[aria-pressed=true]{background:var(--acc);color:var(--accT);border-color:var(--acc)}
+progress{width:100%;height:10px;accent-color:var(--acc);margin-top:12px}select{font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);margin-bottom:6px}input[type=range]{width:60%;accent-color:var(--acc);vertical-align:middle}
+</style></head><body><div class="w">
+<header><svg id="sp" width="46" height="84" viewBox="0 0 46 84" aria-hidden="true"></svg>
+<div><h1>脊安</h1><p>儿童脊柱侧弯家庭筛查与姿势追踪</p></div><div class="lang" id="lang"></div></header>
+
+<div class="tabs" role="tablist">
+<button class="tab" role="tab" aria-selected="true" data-t="q">风险问卷</button>
+<button class="tab" role="tab" aria-selected="false" data-t="p">背部照片</button>
+<button class="tab" role="tab" aria-selected="false" data-t="a">前屈测量</button>
+<button class="tab" role="tab" aria-selected="false" data-t="tg">康复训练</button>
+<button class="tab" role="tab" aria-selected="false" data-t="r">记录趋势</button>
+<button class="tab" role="tab" aria-selected="false" data-t="i">说明</button></div>
+
+<section id="q" class="on"><div class="card"><h2>家长观察清单</h2>
+<p class="mut">让孩子脱去上衣、自然站立，从背后观察，勾选符合的项目。</p>
+<div id="ql"></div><button class="btn" id="qb">计算风险</button><div id="qr"></div></div></section>
+
+<section id="p"><div class="card"><h2>背部照片姿势分析</h2>
+<p class="mut">孩子赤脚、背对镜头、站直，距离约 2 米，手机与背部中段同高并保持水平。照片只在本机处理，不会上传。</p>
+<input type="file" id="f" accept="image/*" aria-label="选择或拍摄背部照片">
+<p id="hint" class="mut">先选择照片。</p>
+<canvas id="c" width="320" height="240"></canvas>
+<button class="btn s" id="undo">撤销一点</button><button class="btn s" id="reset">重新标点</button><div id="pr"></div></div></section>
+
+<section id="a"><div class="card"><h2>前屈测量（躯干旋转角 ATR）</h2>
+<ol><li>手机平放桌面，点“开启传感器”，再点“归零”。</li>
+<li>孩子双脚并拢、膝盖伸直，双臂下垂，缓慢前屈到背部接近水平。</li>
+<li>手机短边横跨脊柱，放在背部隆起最明显处，稳定后点“取当前读数”。</li></ol>
+<button class="btn" id="se">开启传感器</button><button class="btn s" id="z">归零</button>
+<p class="mut">实时倾角</p><div class="big" id="live">–</div>
+<p id="sm" class="mut"></p>
+<p>读不到传感器时，可手动输入量角器/脊柱侧弯测量仪读数：<br><input type="number" id="man" min="0" max="40" step="0.5" aria-label="手动输入角度"> °</p>
+<button class="btn" id="ab">取当前读数</button><div id="ar"></div></div></section>
+
+<section id="tg"><div class="card"><h2>摄像头康复训练追踪</h2>
+<p class="mut">用颜色标记点追踪动作：在手腕、脚踝或腰部贴一个鲜艳的单色贴纸，背景尽量简洁、光线充足。画面只在本机处理，不会上传或保存。</p>
+<select id="ex"><option value="0">举臂</option><option value="1">坐站转移</option><option value="2">侧抬腿</option><option value="3">其他动作</option></select><br>
+<button class="btn" id="cs">开启摄像头</button><button class="btn s" id="cf">切换摄像头</button><button class="btn s" id="co">关闭摄像头</button>
+<canvas id="cc" width="320" height="240"></canvas>
+<p id="cm" class="mut"></p>
+<p class="mut">颜色灵敏度 <input type="range" id="sn" min="25" max="120" value="60"></p>
+<button class="btn s" id="cx">重选标记颜色</button><button class="btn s" id="p0">记录起始位置</button><button class="btn s" id="p1">记录目标位置</button><br>
+<button class="btn" id="go">开始训练</button><button class="btn s" id="en">结束训练</button>
+<progress id="pb" max="1" value="0"></progress>
+<p class="mut">次数</p><div class="big" id="cnt">0</div><p class="mut" id="cst"></p>
+<div id="trr"></div>
+<p class="mut">准确度 = 每次动作的峰值接近你设定的目标位置的程度，不足或过度都会扣分；80% 以上算达标。这是辅助记录，不能替代治疗师的指导。</p></div></section>
+
+<section id="r"><div class="card"><h2>趋势</h2><p class="mut">每隔 1–3 个月测一次，观察角度是否变大。</p>
+<svg id="ch" viewBox="0 0 320 150" width="100%" role="img" aria-label="角度趋势图"></svg>
+<p class="mut" id="lg"></p></div>
+<div class="card"><h2>历史记录</h2><div id="rl"></div><button class="btn s" id="clr">清除全部记录</button></div></section>
+
+<section id="i"><div class="card"><h2>怎么用，怎么看</h2>
+<p>脊柱侧弯是脊柱在正面出现 10° 以上的侧向弯曲（X 线 Cobb 角），多在青春期快速生长阶段加重。学校和家庭常用“Adams 前屈试验 + 躯干旋转角”做初筛，常引用的参考是：ATR 达到 7° 左右，多对应 Cobb 角约 20°，建议转诊。</p>
+<p><b>本页的阈值是参考值，不是诊断标准。</b>照片角度受镜头倾斜、站姿和衣着影响；手机传感器精度也不及专业量角器。任何一项出现“建议就诊”，请带孩子到儿童骨科或脊柱外科，由医生决定是否拍摄站立位脊柱全长 X 线。</p>
+<p class="mut">数据保存在你自己的浏览器里，页面不收集孩子的照片和姓名。给 14 岁以下儿童使用，请由监护人操作。</p></div></section>
+
+<footer>仅供科普与初步筛查，不能替代医生诊断。</footer></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),LZ=['正常范围','建议复查','建议就诊'];
+const T=[
+['脊安','SpineSafe','척추안심'],
+['儿童脊柱侧弯家庭筛查与姿势追踪','Home scoliosis screening and posture tracking for children','어린이 척추측만증 가정 선별 및 자세 추적'],
+['风险问卷','Risk Quiz','위험 설문'],['背部照片','Back Photo','등 사진'],['前屈测量','Forward Bend','전굴 측정'],['记录趋势','Trends','기록·추이'],['说明','About','안내'],
+['家长观察清单','Parent observation checklist','보호자 관찰 체크리스트'],
+['让孩子脱去上衣、自然站立，从背后观察，勾选符合的项目。','Have your child take off their top and stand naturally. Look from behind and tick what applies.','아이의 상의를 벗기고 자연스럽게 세운 뒤 뒤에서 관찰하여 해당 항목을 체크하세요.'],
+['计算风险','Calculate risk','위험도 계산'],
+['背部照片姿势分析','Back photo posture analysis','등 사진 자세 분석'],
+['孩子赤脚、背对镜头、站直，距离约 2 米，手机与背部中段同高并保持水平。照片只在本机处理，不会上传。','Child barefoot, back to the camera, standing straight, about 2 m away; hold the phone level at mid-back height. Photos are processed on this device only and never uploaded.','아이는 맨발로 카메라를 등지고 똑바로 서고, 약 2m 거리에서 휴대폰을 등 중간 높이에 수평으로 듭니다. 사진은 이 기기에서만 처리되며 업로드되지 않습니다.'],
+['撤销一点','Undo point','점 취소'],['重新标点','Start over','다시 찍기'],
+['前屈测量（躯干旋转角 ATR）','Forward bend test (angle of trunk rotation, ATR)','전굴 검사(몸통 회전각, ATR)'],
+['手机平放桌面，点“开启传感器”，再点“归零”。','Lay the phone flat on a table, tap “Turn on sensor”, then “Zero”.','휴대폰을 탁자에 평평하게 놓고 ‘센서 켜기’, ‘영점’을 차례로 누르세요.'],
+['孩子双脚并拢、膝盖伸直，双臂下垂，缓慢前屈到背部接近水平。','Child stands feet together, knees straight, arms hanging, and bends forward slowly until the back is nearly horizontal.','아이는 두 발을 모으고 무릎을 편 채 팔을 늘어뜨리고, 등이 거의 수평이 될 때까지 천천히 숙입니다.'],
+['手机短边横跨脊柱，放在背部隆起最明显处，稳定后点“取当前读数”。','Place the phone’s short edge across the spine at the most prominent bulge; when steady, tap “Take reading”.','휴대폰의 짧은 변이 척추를 가로지르게 가장 솟은 곳에 올리고, 안정되면 ‘현재값 기록’을 누르세요.'],
+['开启传感器','Turn on sensor','센서 켜기'],['归零','Zero','영점'],['取当前读数','Take reading','현재값 기록'],
+['实时倾角','Live tilt','실시간 기울기'],
+['读不到传感器时，可手动输入量角器/脊柱侧弯测量仪读数：','If the sensor can’t be read, enter a reading from a protractor or scoliometer:','센서를 읽을 수 없으면 각도기·척추측만계 수치를 직접 입력하세요:'],
+['趋势','Trends','추이'],
+['每隔 1–3 个月测一次，观察角度是否变大。','Measure every 1–3 months and watch whether the angles grow.','1–3개월마다 측정하여 각도가 커지는지 확인하세요.'],
+['历史记录','History','기록 내역'],['清除全部记录','Clear all records','모든 기록 삭제'],
+['怎么用，怎么看','How to use and read it','사용법과 해석'],
+['脊柱侧弯是脊柱在正面出现 10° 以上的侧向弯曲（X 线 Cobb 角），多在青春期快速生长阶段加重。学校和家庭常用“Adams 前屈试验 + 躯干旋转角”做初筛，常引用的参考是：ATR 达到 7° 左右，多对应 Cobb 角约 20°，建议转诊。','Scoliosis is a sideways spinal curve of 10° or more (Cobb angle on X-ray) and often worsens during the pubertal growth spurt. Schools and families commonly screen with the Adams forward bend test plus ATR; a frequently cited reference is that an ATR near 7° corresponds to a Cobb angle of about 20°, so referral is advised.','척추측만증은 정면에서 척추가 10° 이상 옆으로 휜 상태(X선 Cobb각)로, 사춘기 급성장기에 심해지는 경우가 많습니다. 학교와 가정에서는 Adams 전굴 검사와 ATR로 선별하며, ATR 약 7°가 Cobb각 약 20°에 해당한다는 기준이 자주 인용되어 전원을 권합니다.'],
+['本页的阈值是参考值，不是诊断标准。','The thresholds here are guides, not diagnostic criteria.','이 페이지의 기준값은 참고용이며 진단 기준이 아닙니다.'],
+['照片角度受镜头倾斜、站姿和衣着影响；手机传感器精度也不及专业量角器。任何一项出现“建议就诊”，请带孩子到儿童骨科或脊柱外科，由医生决定是否拍摄站立位脊柱全长 X 线。','Photo angles are affected by camera tilt, posture and clothing, and phone sensors are less accurate than a professional scoliometer. If any result says “See a doctor”, take your child to a pediatric orthopedic or spine clinic; the doctor decides whether a full-length standing spine X-ray is needed.','사진 각도는 카메라 기울기, 자세, 옷차림의 영향을 받고, 휴대폰 센서는 전문 측정기보다 정확도가 낮습니다. 결과에 ‘진료 권장’이 나오면 소아정형외과나 척추 클리닉을 방문하세요. 의사가 서서 찍는 척추 전장 X선이 필요한지 판단합니다.'],
+['数据保存在你自己的浏览器里，页面不收集孩子的照片和姓名。给 14 岁以下儿童使用，请由监护人操作。','Data stays in your own browser; this page does not collect your child’s photos or name. For children under 14, a guardian should operate it.','데이터는 사용자의 브라우저에만 저장되며 아이의 사진이나 이름을 수집하지 않습니다. 14세 미만 아동은 보호자가 조작해 주세요.'],
+['仅供科普与初步筛查，不能替代医生诊断。','For education and initial screening only; not a substitute for a doctor’s diagnosis.','교육 및 초기 선별용이며 의사의 진단을 대체하지 않습니다.'],
+['正常范围','Normal range','정상 범위'],['建议复查','Recheck advised','재검사 권장'],['建议就诊','See a doctor','진료 권장'],
+['两肩高低不一致，或一侧衣领更歪','Shoulders uneven, or one side of the collar sits crooked','어깨 높이가 다르거나 옷깃이 한쪽으로 기울어 있음'],
+['一侧肩胛骨明显更突出','One shoulder blade sticks out more','한쪽 견갑골이 더 튀어나옴'],
+['两侧腰线不对称，一侧腰部凹陷更深','Waistline uneven, one side dips deeper','허리선이 비대칭이고 한쪽이 더 들어감'],
+['前屈时背部一侧隆起','One side of the back bulges when bending forward','앞으로 숙일 때 등 한쪽이 솟아오름'],
+['站立时头不在骨盆正上方，身体偏向一侧','Head is not centered over the pelvis; body leans to one side','서 있을 때 머리가 골반 위에 있지 않고 몸이 한쪽으로 기움'],
+['直系亲属有脊柱侧弯','A parent or sibling has scoliosis','직계 가족 중 척추측만증이 있음'],
+['处于青春期快速生长期（女孩约 10–14 岁，男孩约 12–16 岁）','In the pubertal growth spurt (girls ~10–14, boys ~12–16)','사춘기 급성장기 (여아 약 10–14세, 남아 약 12–16세)'],
+['裤脚或裙摆总是一侧偏长','Pant legs or hem always hang longer on one side','바지 밑단이나 치맛단이 한쪽만 길게 내려옴'],
+['暂未发现明显风险信号，青春期建议每 6 个月复查一次。','No obvious risk signs. During puberty, recheck every 6 months.','뚜렷한 위험 신호는 없습니다. 사춘기에는 6개월마다 다시 확인하세요.'],
+['有一些风险信号，建议接着做“背部照片”和“前屈测量”。','Some risk signs. Continue with the Back Photo and Forward Bend tests.','일부 위험 신호가 있습니다. ‘등 사진’과 ‘전굴 측정’을 이어서 해 보세요.'],
+['风险信号较多，建议尽快带孩子到医院脊柱专科检查。','Several risk signs. Take your child to a spine specialist soon.','위험 신호가 많습니다. 가능한 한 빨리 척추 전문 병원에 가세요.'],
+['得分','Score','점수'],
+['图中左肩','Left shoulder (as in photo)','사진 속 왼쪽 어깨'],['图中右肩','Right shoulder (as in photo)','사진 속 오른쪽 어깨'],
+['图中左髋（髂嵴最高处）','Left hip (top of iliac crest, as in photo)','사진 속 왼쪽 골반(장골능 가장 높은 곳)'],
+['图中右髋（髂嵴最高处）','Right hip (top of iliac crest, as in photo)','사진 속 오른쪽 골반(장골능 가장 높은 곳)'],
+['颈 7 椎（低头时后颈最突出处）','C7 vertebra (most prominent bump at the back of the neck when head is bowed)','경추 7번(고개 숙일 때 뒷목에서 가장 튀어나온 곳)'],
+['臀沟顶点','Top of the gluteal cleft','엉덩이 골 맨 윗점'],
+['先选择照片。','Choose a photo first.','먼저 사진을 선택하세요.'],
+['请点第 {} 点：','Tap point {}: ','{}번째 점을 누르세요: '],
+['已完成 6 点。','All 6 points placed.','6개 점을 모두 찍었습니다.'],
+['肩线倾斜','Shoulder-line tilt','어깨선 기울기'],['骨盆线倾斜','Pelvic-line tilt','골반선 기울기'],['躯干偏离垂直','Trunk deviation from vertical','몸통의 수직 이탈'],['偏移约','offset ≈','이동 약'],
+['图中左侧较高','left side higher in photo','사진 속 왼쪽이 높음'],['图中右侧较高','right side higher in photo','사진 속 오른쪽이 높음'],
+['参考：任一项 ≥2° 复查，≥4° 就诊。拍摄时手机倾斜会造成误差。','Guide: any value ≥2° → recheck, ≥4° → see a doctor. A tilted phone adds error.','참고: 어느 항목이든 2° 이상이면 재검사, 4° 이상이면 진료. 휴대폰이 기울어지면 오차가 생깁니다.'],
+['躯干旋转角','Angle of trunk rotation (ATR)','몸통 회전각(ATR)'],
+['参考：5° 以下正常，5–6° 复查，≥7° 建议转诊。','Guide: under 5° normal, 5–6° recheck, ≥7° referral advised.','참고: 5° 미만 정상, 5–6° 재검사, 7° 이상 전원 권장.'],
+['传感器权限被拒绝，请手动输入读数。','Sensor permission denied. Enter the reading manually.','센서 권한이 거부되었습니다. 수동으로 입력하세요.'],
+['正在读取…','Reading…','읽는 중…'],
+['没有读到传感器数据（电脑或浏览器限制），请手动输入读数。','No sensor data (computer or browser limitation). Enter the reading manually.','센서 데이터를 읽지 못했습니다(PC 또는 브라우저 제한). 수동으로 입력하세요.'],
+['传感器已开启。','Sensor on.','센서가 켜졌습니다.'],
+['请先开启传感器或手动输入','Turn on the sensor or enter a value first.','먼저 센서를 켜거나 값을 입력하세요.'],
+['已保存','Saved','저장됨'],['保存到记录','Save to records','기록에 저장'],['确定清除全部记录？','Clear all records?','모든 기록을 삭제할까요?'],
+['问卷','Quiz','설문'],['照片','Photo','사진'],['前屈','Bend','전굴'],['肩','Shoulder','어깨'],['髋','Hip','골반'],
+['还没有记录。完成一次测量后点“保存到记录”。','No records yet. After a test, tap “Save to records”.','기록이 없습니다. 측정 후 ‘기록에 저장’을 누르세요.'],
+['肩线','Shoulder','어깨선'],['骨盆','Pelvis','골반'],
+['角度趋势图','Angle trend chart','각도 추이 그래프'],['手动输入角度','Manual angle entry','각도 직접 입력'],['选择或拍摄背部照片','Choose or take a back photo','등 사진 선택 또는 촬영']
+];
+T.push(
+['康复训练','Rehab Training','재활 운동'],
+['摄像头康复训练追踪','Camera rehab exercise tracking','카메라 재활 운동 추적'],
+['用颜色标记点追踪动作：在手腕、脚踝或腰部贴一个鲜艳的单色贴纸，背景尽量简洁、光线充足。画面只在本机处理，不会上传或保存。','Tracks movement by a colored marker: stick a bright single-color sticker on the wrist, ankle or waist, with a plain background and good light. Video is processed on this device only and is never uploaded or saved.','색깔 마커로 동작을 추적합니다. 손목·발목·허리에 선명한 단색 스티커를 붙이고, 배경은 단순하게, 조명은 밝게 하세요. 영상은 이 기기에서만 처리되며 업로드·저장되지 않습니다.'],
+['举臂','Arm raise','팔 들기'],['坐站转移','Sit-to-stand','앉았다 일어서기'],['侧抬腿','Side leg raise','다리 옆으로 들기'],['其他动作','Other exercise','기타 동작'],
+['开启摄像头','Start camera','카메라 켜기'],['关闭摄像头','Stop camera','카메라 끄기'],['切换摄像头','Switch camera','카메라 전환'],['重选标记颜色','Re-pick marker color','마커 색 다시 선택'],
+['颜色灵敏度','Color sensitivity','색상 민감도'],
+['记录起始位置','Set start position','시작 위치 기록'],['记录目标位置','Set target position','목표 위치 기록'],['开始训练','Start session','운동 시작'],['结束训练','End session','운동 종료'],
+['次数','Reps','횟수'],['达标','On target','목표 달성'],['平均准确度','Avg. accuracy','평균 정확도'],['上一次','Last','직전'],['用时','Time','소요 시간'],['准确度','Accuracy','정확도'],['训练','Session','운동'],['训练完成','Session complete','운동 완료'],
+['准确度 = 每次动作的峰值接近你设定的目标位置的程度，不足或过度都会扣分；80% 以上算达标。这是辅助记录，不能替代治疗师的指导。','Accuracy = how close each repetition’s peak gets to the target position you set; falling short or overshooting both lower it, and 80%+ counts as on target. This is a logging aid, not a substitute for your therapist’s guidance.','정확도 = 각 동작의 정점이 설정한 목표 위치에 얼마나 가까운지를 뜻하며, 모자라거나 지나쳐도 감점됩니다. 80% 이상이면 목표 달성입니다. 기록 보조용이며 치료사의 지도를 대체하지 않습니다.'],
+['点击画面中的彩色标记，选定追踪颜色。','Tap the colored marker in the picture to choose the color to track.','화면의 색깔 마커를 눌러 추적할 색을 선택하세요.'],
+['已选定标记。让孩子摆出起始姿势，点“记录起始位置”。','Marker set. Have the child hold the starting pose, then tap “Set start position”.','마커가 선택되었습니다. 아이가 시작 자세를 취하면 ‘시작 위치 기록’을 누르세요.'],
+['已记录起始位置。再摆出目标姿势，点“记录目标位置”。','Start saved. Move to the target pose, then tap “Set target position”.','시작 위치를 기록했습니다. 목표 자세를 취한 뒤 ‘목표 위치 기록’을 누르세요.'],
+['已记录目标位置。点“开始训练”，按节奏重复动作。','Target saved. Tap “Start session” and repeat the movement at a steady pace.','목표 위치를 기록했습니다. ‘운동 시작’을 누르고 일정한 속도로 반복하세요.'],
+['训练中…请让标记一直留在画面内。','Training… keep the marker in view.','운동 중… 마커가 화면 안에 있도록 하세요.'],
+['没有找到标记。请调高灵敏度、改善光线，或换更鲜艳的贴纸。','Marker not found. Raise sensitivity, improve lighting, or use a brighter sticker.','마커를 찾지 못했습니다. 민감도를 높이거나 조명을 개선하거나 더 선명한 스티커를 쓰세요.'],
+['起始和目标位置太近，请重新记录。','Start and target are too close. Record them again.','시작과 목표 위치가 너무 가깝습니다. 다시 기록하세요.'],
+['无法使用摄像头：请允许权限，或在手机/电脑浏览器中直接打开本页。','Can’t use the camera: allow permission, or open this page directly in your phone or computer browser.','카메라를 사용할 수 없습니다. 권한을 허용하거나 휴대폰·PC 브라우저에서 이 페이지를 직접 여세요.'],
+['请先打开摄像头。','Start the camera first.','먼저 카메라를 켜세요.'],
+['请先记录起始和目标位置。','Set the start and target positions first.','먼저 시작·목표 위치를 기록하세요.'],
+['没有记录到完整动作。请确认标记被追踪到，并按节奏重复。','No complete repetitions recorded. Make sure the marker is tracked and repeat at a steady pace.','완전한 동작이 기록되지 않았습니다. 마커가 추적되는지 확인하고 일정한 속도로 반복하세요.']
+);
+const M={},LG=['zh','en','ko'],LC={zh:'zh-CN',en:'en-US',ko:'ko-KR'},LN={zh:'中文',en:'EN',ko:'한국어'};
+T.forEach(r=>M[r[0]]={en:r[1],ko:r[2]});
+let lang='zh',mem=[],R={},sk='';
+try{lang=localStorage.getItem('janL')||''}catch(e){}
+if(!LC[lang]){const n=(navigator.language||'zh').slice(0,2);lang=n=='ko'?'ko':n=='en'?'en':'zh'}
+const t=k=>lang=='zh'?k:(M[k]&&M[k][lang])||k;
+function load(){try{return JSON.parse(localStorage.getItem('jan')||'[]')}catch(e){return mem}}
+function persist(a){mem=a;try{localStorage.setItem('jan',JSON.stringify(a))}catch(e){}}
+function toast(k){const e=$('#toast');e.textContent=t(k);e.className='on';setTimeout(()=>e.className='',1600)}
+const lv=(v,lo,hi)=>v>=hi?2:v>=lo?1:0;
+function tx(){const w=document.createTreeWalker(document.body,4);let n;while(n=w.nextNode()){if(n.parentNode.closest('script,#toast,#lang'))continue;if(n._o===undefined)n._o=n.nodeValue;const k=n._o.trim();if(k)n.nodeValue=n._o.replace(k,t(k))}}
+function setLang(g){lang=g;try{localStorage.setItem('janL',g)}catch(e){}
+document.documentElement.lang=LC[g];document.title=t('脊安')+' · '+t('儿童脊柱侧弯家庭筛查与姿势追踪');
+$('#lang').innerHTML=LG.map(x=>`<button data-g="${x}" aria-pressed="${x==g}">${LN[x]}</button>`).join('');
+tx();$('#f').setAttribute('aria-label',t('选择或拍摄背部照片'));$('#man').setAttribute('aria-label',t('手动输入角度'));$('#ch').setAttribute('aria-label',t('角度趋势图'));
+rq();pd();cr();Object.keys(R).forEach(showR);if(sk)$('#sm').textContent=t(sk);draw()}
+$('#lang').onclick=e=>{const g=e.target.dataset.g;if(g)setLang(g)};
+// logo
+(function(){let s='';[22,27,31,29,23,18,20].forEach((x,i)=>{s+=`<rect x="${x-10}" y="${4+i*11.5}" width="20" height="9" rx="4.5" fill="var(--acc)" opacity="${1-i*.06}" transform="rotate(${(x-23)*1.6} ${x} ${8.5+i*11.5})"/>`});$('#sp').innerHTML=s})();
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('section').forEach(s=>s.className=s.id===b.dataset.t?'on':'');if(b.dataset.t=='r')draw();if(b.dataset.t!='tg')camOff()});
+function showR(id){const r=R[id];if(!r)return;$('#'+id).innerHTML=`<div class="res w${r.l}"><b>${t(r.h||LZ[r.l])}</b><br>${r.f()}</div><button class="btn s">${t('保存到记录')}</button>`;$('#'+id+' button').onclick=()=>{const a=load();a.push(Object.assign({t:Date.now(),l:r.l},r.o));persist(a);toast('已保存')}}
+function result(id,l,f,o,hd){R[id]={l,f,o,h:hd};showR(id)}
+// quiz
+const Q=[['两肩高低不一致，或一侧衣领更歪',2],['一侧肩胛骨明显更突出',2],['两侧腰线不对称，一侧腰部凹陷更深',2],['前屈时背部一侧隆起',3],['站立时头不在骨盆正上方，身体偏向一侧',2],['直系亲属有脊柱侧弯',2],['处于青春期快速生长期（女孩约 10–14 岁，男孩约 12–16 岁）',1],['裤脚或裙摆总是一侧偏长',1]];
+const QM=['暂未发现明显风险信号，青春期建议每 6 个月复查一次。','有一些风险信号，建议接着做“背部照片”和“前屈测量”。','风险信号较多，建议尽快带孩子到医院脊柱专科检查。'];
+function rq(){const c=[...document.querySelectorAll('#ql input')].map(i=>i.checked);$('#ql').innerHTML=Q.map((q,i)=>`<label class="q"><input type="checkbox" data-i="${i}" ${c[i]?'checked':''}><span>${t(q[0])}</span></label>`).join('')}
+$('#qb').onclick=()=>{let s=0,h=0;document.querySelectorAll('#ql input:checked').forEach(c=>{s+=Q[c.dataset.i][1];if(c.dataset.i==3)h=1});const l=(s>=6||h)?2:s>=3?1:0;
+result('qr',l,()=>`${t(QM[l])} (${t('得分')} ${s})`,{k:'q',s})};
+// photo
+const cv=$('#c'),cx=cv.getContext('2d'),N=['图中左肩','图中右肩','图中左髋（髂嵴最高处）','图中右髋（髂嵴最高处）','颈 7 椎（低头时后颈最突出处）','臀沟顶点'];
+let img=null,pts=[];
+$('#f').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{img=im;const w=Math.min(im.width,640);cv.width=w;cv.height=Math.round(im.height*w/im.width);pts=[];delete R.pr;$('#pr').innerHTML='';pd()};im.src=URL.createObjectURL(f)};
+function pd(){cx.clearRect(0,0,cv.width,cv.height);if(img)cx.drawImage(img,0,0,cv.width,cv.height);const r=Math.max(4,cv.width/90);cx.lineWidth=r/2;cx.strokeStyle='#ffd23f';[[0,1],[2,3],[4,5]].forEach(([a,b])=>{if(pts[b]){cx.beginPath();cx.moveTo(pts[a].x,pts[a].y);cx.lineTo(pts[b].x,pts[b].y);cx.stroke()}});pts.forEach((p,i)=>{cx.fillStyle='#0b8f80';cx.beginPath();cx.arc(p.x,p.y,r,0,7);cx.fill();cx.fillStyle='#fff';cx.font=`${r*2.2}px sans-serif`;cx.fillText(i+1,p.x+r+2,p.y-r)});
+$('#hint').textContent=!img?t('先选择照片。'):pts.length<6?t('请点第 {} 点：').replace('{}',pts.length+1)+t(N[pts.length]):t('已完成 6 点。')}
+const ang=(a,b)=>{let d=Math.abs(Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI);return d>90?180-d:d};
+cv.onpointerdown=e=>{if(!img||pts.length>=6)return;const r=cv.getBoundingClientRect();pts.push({x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height});pd();if(pts.length==6)calc()};
+function clr(){delete R.pr;$('#pr').innerHTML='';pd()}
+$('#undo').onclick=()=>{pts.pop();clr()};$('#reset').onclick=()=>{pts=[];clr()};
+function calc(){const st=ang(pts[0],pts[1]),ht=ang(pts[2],pts[3]),dx=pts[4].x-pts[5].x,dy=Math.abs(pts[4].y-pts[5].y)||1,ta=Math.atan2(Math.abs(dx),dy)*180/Math.PI,off=Math.abs(dx)/dy*100;
+const l=Math.max(lv(st,2,4),lv(ht,2,4),lv(ta,2,4)),hi=pts[0].y<pts[1].y?'图中左侧较高':'图中右侧较高',hh=pts[2].y<pts[3].y?'图中左侧较高':'图中右侧较高';
+result('pr',l,()=>`${t('肩线倾斜')} <b>${st.toFixed(1)}°</b> (${t(hi)})<br>${t('骨盆线倾斜')} <b>${ht.toFixed(1)}°</b> (${t(hh)})<br>${t('躯干偏离垂直')} <b>${ta.toFixed(1)}°</b> (${t('偏移约')} ${off.toFixed(1)}%)<br><span class="mut">${t('参考：任一项 ≥2° 复查，≥4° 就诊。拍摄时手机倾斜会造成误差。')}</span>`,{k:'p',st:+st.toFixed(1),ht:+ht.toFixed(1),ta:+ta.toFixed(1)})}
+// forward bend
+let raw=0,g0=0,live=0,got=false;
+function h(e){if(e.gamma==null)return;got=true;raw=e.gamma;live=raw-g0;$('#live').textContent=Math.abs(live).toFixed(1)+'°'}
+function sm(k){sk=k;$('#sm').textContent=t(k)}
+$('#se').onclick=async()=>{try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){if(await DeviceOrientationEvent.requestPermission()!=='granted'){sm('传感器权限被拒绝，请手动输入读数。');return}}}catch(e){}
+addEventListener('deviceorientation',h);sm('正在读取…');setTimeout(()=>sm(got?'传感器已开启。':'没有读到传感器数据（电脑或浏览器限制），请手动输入读数。'),2000)};
+$('#z').onclick=()=>{g0=raw;live=0;$('#live').textContent='0.0°'};
+$('#ab').onclick=()=>{const m=parseFloat($('#man').value),v=isNaN(m)?Math.abs(live):m;if(isNaN(m)&&!got){toast('请先开启传感器或手动输入');return}const l=lv(v,5,7);
+result('ar',l,()=>`${t('躯干旋转角')} <b>${v.toFixed(1)}°</b><br><span class="mut">${t('参考：5° 以下正常，5–6° 复查，≥7° 建议转诊。')}</span>`,{k:'a',atr:+v.toFixed(1)})};
+// records
+function draw(){const a=load(),S=[['#0b8f80',a.filter(x=>x.k=='p').map(x=>x.st)],['#b7791f',a.filter(x=>x.k=='p').map(x=>x.ht)],['#c53b3b',a.filter(x=>x.k=='a').map(x=>x.atr)]];
+const mx=Math.max(10,...S.flatMap(s=>s[1]));let g='';for(let y=0;y<=mx;y+=Math.ceil(mx/4)){const Y=130-y/mx*115;g+=`<line x1="30" x2="315" y1="${Y}" y2="${Y}" stroke="var(--line)"/><text x="4" y="${Y+3}">${y}°</text>`}
+S.forEach(s=>{const d=s[1];if(!d.length)return;const p=d.map((v,i)=>[30+(d.length>1?i/(d.length-1):.5)*285,130-v/mx*115]);g+=`<polyline fill="none" stroke="${s[0]}" stroke-width="2.5" points="${p.map(q=>q.join(',')).join(' ')}"/>`+p.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="3.5" fill="${s[0]}"/>`).join('')});
+$('#ch').innerHTML=g;$('#lg').innerHTML=`<span style="color:#0b8f80">● ${t('肩线')}</span>　<span style="color:#b7791f">● ${t('骨盆')}</span>　<span style="color:#c53b3b">● ATR</span>`;
+const K={q:'问卷',p:'照片',a:'前屈',t:'训练'};$('#rl').innerHTML=a.length?a.slice().reverse().map(x=>`<div class="rec"><span>${new Date(x.t).toLocaleDateString(LC[lang])} ${t(K[x.k])}</span><span>${x.k=='t'?`${t(EX[x.ex])} ${x.reps}× · ${t('准确度')} ${x.acc}%`:(x.k=='q'?t('得分')+' '+x.s:x.k=='p'?`${t('肩')} ${x.st}° ${t('髋')} ${x.ht}°`:`ATR ${x.atr}°`)+' · '+t(LZ[x.l])}</span></div>`).join(''):`<p class="mut">${t('还没有记录。完成一次测量后点“保存到记录”。')}</p>`}
+$('#clr').onclick=()=>{if(confirm(t('确定清除全部记录？'))){persist([]);draw()}};
+// training
+const EX=['举臂','坐站转移','侧抬腿','其他动作'],cc=$('#cc'),cg=cc.getContext('2d',{willReadFrequently:true}),vid=document.createElement('video');
+let stm=null,fm='user',mk=null,P0=null,P1=null,cur=null,run=false,reps=[],ph=0,pk=0,rs=0,t0=0,cmk='',lp=0;
+function cm(k){cmk=k;$('#cm').textContent=k?t(k):''}
+function ust(){const n=reps.length,g=reps.filter(r=>r.acc>=80).length,a=n?Math.round(reps.reduce((s,r)=>s+r.acc,0)/n):0;$('#cnt').textContent=n;$('#cst').textContent=n?`${t('达标')} ${g} · ${t('平均准确度')} ${a}% · ${t('上一次')} ${reps[n-1].acc}%`:''}
+function cr(){cm(cmk);ust()}
+function camOff(){run=false;lp++;if(stm){stm.getTracks().forEach(x=>x.stop());stm=null}cur=null}
+async function camOn(){camOff();try{stm=await navigator.mediaDevices.getUserMedia({video:{facingMode:fm,width:{ideal:640}},audio:false});vid.srcObject=stm;vid.muted=true;vid.setAttribute('playsinline','');await vid.play();cm(mk?'':'点击画面中的彩色标记，选定追踪颜色。');loop(++lp)}catch(e){stm=null;cm('无法使用摄像头：请允许权限，或在手机/电脑浏览器中直接打开本页。')}}
+function step(v){const now=performance.now();if(ph==0){if(v>.3){ph=1;pk=v;rs=now}}else{pk=Math.max(pk,v);if(v<.15){if(now-rs>400){reps.push({acc:Math.round(Math.max(0,100-Math.abs(1-pk)*100)),ms:now-rs});ust()}ph=0}}}
+function loop(id){if(!stm||id!==lp)return;const W=320,H=Math.round(W*(vid.videoHeight||240)/(vid.videoWidth||320));if(cc.width!=W||cc.height!=H){cc.width=W;cc.height=H}
+cg.save();if(fm=='user'){cg.translate(W,0);cg.scale(-1,1)}cg.drawImage(vid,0,0,W,H);cg.restore();
+if(mk){const d=cg.getImageData(0,0,W,H).data,th=+$('#sn').value,t2=th*th;let sx=0,sy=0,n=0;for(let y=0;y<H;y+=2)for(let x=0;x<W;x+=2){const i=(y*W+x)*4,a=d[i]-mk[0],b=d[i+1]-mk[1],c=d[i+2]-mk[2];if(a*a+b*b+c*c<t2){sx+=x;sy+=y;n++}}
+if(n>=6){const p={x:sx/n,y:sy/n};cur=cur?{x:cur.x*.5+p.x*.5,y:cur.y*.5+p.y*.5}:p}else cur=null}
+cg.lineWidth=3;if(P0&&P1){cg.strokeStyle='#fff';cg.beginPath();cg.moveTo(P0.x,P0.y);cg.lineTo(P1.x,P1.y);cg.stroke()}
+[[P0,'#2fc46a',12],[P1,'#ff9f1c',12],[cur,'#ffd23f',8]].forEach(([p,c,r])=>{if(p){cg.strokeStyle=c;cg.beginPath();cg.arc(p.x,p.y,r,0,7);cg.stroke()}});
+if(P0&&P1&&cur){const dx=P1.x-P0.x,dy=P1.y-P0.y,v=((cur.x-P0.x)*dx+(cur.y-P0.y)*dy)/(dx*dx+dy*dy);$('#pb').value=Math.min(1,Math.max(0,v));if(run)step(v)}
+requestAnimationFrame(()=>loop(id))}
+$('#cs').onclick=camOn;$('#co').onclick=()=>{camOff();cm('')};
+$('#cf').onclick=()=>{fm=fm=='user'?'environment':'user';if(stm)camOn()};
+$('#cx').onclick=()=>{mk=null;P0=P1=null;cur=null;if(stm)cm('点击画面中的彩色标记，选定追踪颜色。')};
+cc.onpointerdown=e=>{if(!stm||mk)return;const r=cc.getBoundingClientRect(),x=Math.min(cc.width-3,Math.max(2,Math.round((e.clientX-r.left)*cc.width/r.width))),y=Math.min(cc.height-3,Math.max(2,Math.round((e.clientY-r.top)*cc.height/r.height))),d=cg.getImageData(x-2,y-2,5,5).data;let s=[0,0,0];for(let i=0;i<100;i+=4){s[0]+=d[i];s[1]+=d[i+1];s[2]+=d[i+2]}mk=s.map(v=>v/25);cm('已选定标记。让孩子摆出起始姿势，点“记录起始位置”。')};
+$('#p0').onclick=()=>{if(!stm)return cm('请先打开摄像头。');if(!cur)return cm('没有找到标记。请调高灵敏度、改善光线，或换更鲜艳的贴纸。');P0={...cur};P1=null;cm('已记录起始位置。再摆出目标姿势，点“记录目标位置”。')};
+$('#p1').onclick=()=>{if(!stm)return cm('请先打开摄像头。');if(!P0)return cm('请先记录起始和目标位置。');if(!cur)return cm('没有找到标记。请调高灵敏度、改善光线，或换更鲜艳的贴纸。');if(Math.hypot(cur.x-P0.x,cur.y-P0.y)<20)return cm('起始和目标位置太近，请重新记录。');P1={...cur};cm('已记录目标位置。点“开始训练”，按节奏重复动作。')};
+$('#go').onclick=()=>{if(!stm)return cm('请先打开摄像头。');if(!P0||!P1)return cm('请先记录起始和目标位置。');reps=[];ph=0;run=true;t0=performance.now();delete R.trr;$('#trr').innerHTML='';ust();cm('训练中…请让标记一直留在画面内。')};
+$('#en').onclick=()=>{if(!run)return;run=false;const n=reps.length;if(!n){cm('没有记录到完整动作。请确认标记被追踪到，并按节奏重复。');return}cm('');
+const a=Math.round(reps.reduce((s,r)=>s+r.acc,0)/n),g=reps.filter(r=>r.acc>=80).length,sec=Math.round((performance.now()-t0)/1000),m=Math.min(n,30),bars=reps.slice(-30).map((r,i)=>`<rect x="${i*12}" y="${44-r.acc*.44}" width="9" height="${r.acc*.44}" rx="2" fill="${r.acc>=80?'var(--acc)':'var(--warn)'}"/>`).join('');
+result('trr',a>=80?0:a>=60?1:2,()=>`${t('次数')} <b>${n}</b> · ${t('达标')} <b>${g}</b> · ${t('平均准确度')} <b>${a}%</b> · ${t('用时')} <b>${sec}s</b><br><svg viewBox="0 0 ${Math.max(m,10)*12} 44" width="100%" height="44" aria-hidden="true">${bars}</svg>`,{k:'t',ex:+$('#ex').value,reps:n,acc:a,good:g,sec},'训练完成')};
+setLang(lang);
+</script></body></html>
